@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/view/all_list.dart';
-import 'package:flutter_application_1/view/favourite.dart';
+import 'package:to_do_list/view/all_list.dart';
+import 'package:to_do_list/view/favourite.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -56,8 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         children: _screens,
       ),
-
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

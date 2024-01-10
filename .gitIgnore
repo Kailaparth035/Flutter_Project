@@ -1,0 +1,15 @@
+# gradle-wrapper.jar
+/.gradle
+/captures/
+/gradlew
+/gradlew.bat
+/local.properties
+/key.properties
+/build/app
+/build/macos
+/macos
+/android
+/build
+/ios
+/linux
+/windows
