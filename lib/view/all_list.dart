@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
+import 'package:to_do_list/Controler/data_controller.dart';
+import 'package:to_do_list/base/list_card.dart';
+import 'package:to_do_list/view/listdetails_page.dart';
 
 class AllList extends StatefulWidget {
   const AllList({super.key});
@@ -8,17 +14,7 @@ class AllList extends StatefulWidget {
 }
 
 class _AllListState extends State<AllList> {
-  List<Map<String, dynamic>> todoItems = [
-    {"title": 'Task 1', "description": 'Description 1', "isFavourite": true},
-    {"title": 'Task 2', "description": 'Description 2', "isFavourite": false},
-    {"title": 'Task 3', "description": 'Description 3', "isFavourite": true},
-    {"title": 'Task 4', "description": 'Description 4', "isFavourite": false},
-    {"title": 'Task 5', "description": 'Description 5', "isFavourite": true},
-    {"title": 'Task 6', "description": 'Description 6', "isFavourite": false},
-    {"title": 'Task 7', "description": 'Description 7', "isFavourite": true},
-    {"title": 'Task 8', "description": 'Description 8', "isFavourite": false},
-    {"title": 'Task 9', "description": 'Description 9', "isFavourite": true},
-  ];
+  final dataControler = Get.put(DataControler());
 
   void onPressed() {}
 
@@ -27,101 +23,78 @@ class _AllListState extends State<AllList> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: todoItems.length,
-          itemBuilder: (context, index) {
-            String title = todoItems[index]["title"] ?? '';
-            String description = todoItems[index]["description"] ?? '';
+        child: Obx(() {
+          return ListView.builder(
+            itemCount: dataControler.todoList.length,
+            itemBuilder: (context, index) {
+              // var tempList = dataControler.todoList;
+              // String title = tempList[index].title;
+              // String description = tempList[index].description;
 
-            IconData iconData = todoItems[index]["isFavourite"]
-                ? Icons.favorite
-                : Icons.favorite_border;
-            Color iconColor = todoItems[index]["isFavourite"]
-                ? Colors.red
-                : Colors.grey; // Example colors
+              // IconData iconData = tempList[index].isFavourite
+              //     ? Icons.favorite
+              //     : Icons.favorite_border;
+              // Color iconColor =
+              //     tempList[index].isFavourite ? Colors.red : Colors.grey;
 
-            return Card(
-                elevation: 3,
-                margin: const EdgeInsets.all(8),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20,
-                            ),
-                          ),
-                          Text(description),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              elevation: 4,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 0),
-                            ),
-                            child: Icon(
-                              iconData,
-                              color: iconColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              AlertDialog(
-                                  title: new Text("Alert Dialog title"));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              elevation: 4,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 0),
-                            ),
-                            child: const Icon(
-                              Icons.delete,
-                              color: Color.fromARGB(224, 110, 7, 245),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              print('Button pressed!');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              elevation: 4,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 0),
-                            ),
-                            child: const Icon(
-                              Icons.edit,
-                              color: Color.fromARGB(224, 110, 7, 245),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ));
-          },
-        ),
+              return ListCard(item: dataControler.todoList[index]);
+            },
+          );
+        }),
       ),
     );
+  }
+
+  showToast(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      const SnackBar(
+        backgroundColor: Color.fromARGB(255, 142, 17, 17),
+        content: Text('Added to favorite'),
+        // action: SnackBarAction(
+        //     backgroundColor: const Color.fromARGB(255, 142, 17, 17),
+        //     textColor: Colors.white,
+        //     label: 'UNDO',
+        //     onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }
+
+  showAlertDialog(BuildContext context, index) async {
+    Widget okButton = TextButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.pop(context, true);
+      },
+    );
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("My title"),
+      content: const Text("This is my message."),
+      actions: [okButton, cancelButton],
+    );
+
+    // show the dialog
+    var result = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+
+    if (result != null) {
+      if (result == true) {
+        dataControler.removeList(index);
+      } else {
+        print("Cancel Button Press from alert dialog ");
+      }
+    }
   }
 }
